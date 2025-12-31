@@ -452,22 +452,6 @@ class AnyRouterSessionSignIn {
 
 			await this.randomDelay(2000, 3000);
 
-			// 监听 API 响应
-			let signInResponse = null;
-			let userSelfResponse = null;
-
-			page.on('response', async (response) => {
-				const url = response.url();
-				if (url.includes('/api/user/sign_in')) {
-					console.log('[网络] 捕获签到接口响应');
-					signInResponse = await response.json().catch(() => null);
-				}
-				if (url.includes('/api/user/self')) {
-					console.log('[网络] 捕获用户信息接口响应');
-					userSelfResponse = await response.json().catch(() => null);
-				}
-			});
-
 			// 使用 page.evaluate 执行签到请求
 			console.log('[网络] 执行签到...');
 			const result = await page.evaluate(
@@ -657,9 +641,7 @@ class AnyRouterSessionSignIn {
 								);
 
 								if (tokensToSupplement.length > 0) {
-									console.log(
-										`[令牌管理] 发现 ${tokensToSupplement.length} 个令牌需要补充额度`
-									);
+									console.log(`[令牌管理] 发现 ${tokensToSupplement.length} 个令牌需要补充额度`);
 
 									for (const configToken of tokensToSupplement) {
 										// 通过id匹配令牌
@@ -677,11 +659,7 @@ class AnyRouterSessionSignIn {
 												remain_quota: newRemainQuota,
 											};
 
-											const updateResult = await this.updateToken(
-												page,
-												apiUser,
-												updatedTokenData
-											);
+											const updateResult = await this.updateToken(page, apiUser, updatedTokenData);
 											if (updateResult) {
 												// 更新本地tokens数组中的数据
 												matchedToken.remain_quota = updateResult.remain_quota;
@@ -706,7 +684,7 @@ class AnyRouterSessionSignIn {
 													});
 
 													if (keyUpdateResult.success) {
-														console.log(`[令牌管理] 服务端 Key 信息同步成功`);
+														console.log('[令牌管理] 服务端 Key 信息同步成功');
 													} else {
 														console.log(
 															`[令牌管理] 服务端 Key 信息同步失败: ${keyUpdateResult.error}`
@@ -715,9 +693,7 @@ class AnyRouterSessionSignIn {
 												}
 											}
 										} else {
-											console.log(
-												`[令牌管理] 未找到ID为 ${configToken.id} 的令牌，跳过补充`
-											);
+											console.log(`[令牌管理] 未找到ID为 ${configToken.id} 的令牌，跳过补充`);
 										}
 									}
 								}
@@ -811,7 +787,7 @@ class AnyRouterSessionSignIn {
 								unlimited_quota: token.unlimited_quota,
 								used_quota: token.used_quota,
 								remain_quota: token.remain_quota,
-								supplement_quota: 0
+								supplement_quota: 0,
 							}));
 							console.log(`[信息] 成功获取 ${userInfo.tokens.length} 个令牌信息`);
 						}

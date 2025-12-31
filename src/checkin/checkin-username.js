@@ -277,7 +277,7 @@ class AnyRouterSignIn {
 	 * @param {Object} accountInfo - 账号信息（可选，用于令牌管理）
 	 * @returns {Object|null} - { session: string, apiUser: string, userInfo: object }
 	 */
-	async (username, password, accountInfo = null) {
+	async loginAndGetSession(username, password, accountInfo = null) {
 		console.log(`[登录签到] 开始处理账号: ${username}`);
 
 		let browser = null;
